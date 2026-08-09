@@ -318,26 +318,39 @@ async function saveMemory() {
 }
 
 /*==================================================*
- * Cerebral Cortex - displayMemories()
+ * Cerebral Cortex - GitHub検索対応 displayMemories()
  *==================================================*/
-  function displayMemories() {
 
-    const list = document.getElementById("memoryList");
-    const search = document
-      .getElementById("search")
-      .value
-      .toLowerCase();
+async function displayMemories() {
 
-    const memories = getMemories();
+  const list = document.getElementById("memoryList");
+  const search = document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+  const url = 'https://script.google.com/macros/s/AKfycbwzS3XaYHIeLODSTjMDYfunnjUfSRWXgMKtRJPHoQUGyx8x6QMMoLgdLeV0XgduLWad/exec';
+
+  try {
+
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (!result.success) {
+      list.innerHTML =
+        '<div class="empty">記憶の取得に失敗しました。</div>';
+      return;
+    }
+
+    const memories = result.memories;
 
     const filtered = memories.filter(memory => {
 
       const text = [
-        memory.project,
         memory.type,
         memory.title,
-        memory.keywords,
-        memory.content
+        memory.content,
+        memory.path
       ]
       .join(" ")
       .toLowerCase();
@@ -345,13 +358,11 @@ async function saveMemory() {
       return text.includes(search);
     });
 
-
     if (filtered.length === 0) {
       list.innerHTML =
-        '<div class="empty">登録された記憶はありません。</div>';
+        '<div class="empty">該当する記憶はありません。</div>';
       return;
     }
-
 
     list.innerHTML = filtered
       .map(memory => `
@@ -363,11 +374,9 @@ async function saveMemory() {
           </div>
 
           <div class="memory-meta">
-            ${escapeHtml(memory.project)}
-            ／
             ${escapeHtml(memory.type)}
             ／
-            ${escapeHtml(memory.location)}
+            ${escapeHtml(memory.path)}
           </div>
 
           <div class="memory-content">
@@ -378,7 +387,15 @@ async function saveMemory() {
 
       `)
       .join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    list.innerHTML =
+      '<div class="empty">記憶の取得に失敗しました。</div>';
   }
+}
 
 /*==================================================*
  * Cerebral Cortex - escapeHtml() ＋ 初期表示
