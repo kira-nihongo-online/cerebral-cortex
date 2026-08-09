@@ -377,6 +377,38 @@
 
   displayMemories();
 
+  async function testSend() {
+    const url = 'https://script.google.com/macros/s/AKfycbwzS3XaYHIeLODSTjMDYfunnjUfSRWXgMKtRJPHoQUGyx8x6QMMoLgdLeV0XgduLWad/exec';
+
+    const data = {
+      project: document.getElementById('project').value || 'テストプロジェクト',
+      type: document.getElementById('type').value,
+      title: document.getElementById('title').value || '接続テスト',
+      keywords: document.getElementById('keywords').value || 'テスト',
+      location: document.getElementById('location').value || '',
+      content: document.getElementById('content').value || 'Cerebral Cortexからのテスト送信です。'
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.text();
+
+      console.log('Apps Script response:', result);
+
+      alert('Apps Scriptへの送信完了');
+    } catch (error) {
+      console.error(error);
+      alert('送信エラー：' + error.message);
+    }
+  }
+
 </script>
 
 </body>
