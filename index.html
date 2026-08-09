@@ -264,42 +264,46 @@
   }
 
 
-  function saveMemory() {
-
-    const memories = getMemories();
+  async function saveMemory() {
 
     const memory = {
-      id: "M" + String(Date.now()),
       project: document.getElementById("project").value,
       type: document.getElementById("type").value,
       title: document.getElementById("title").value,
       keywords: document.getElementById("keywords").value,
       location: document.getElementById("location").value,
-      content: document.getElementById("content").value,
-      updated: new Date().toISOString()
+      content: document.getElementById("content").value
     };
 
     if (!memory.project || !memory.title || !memory.content) {
-      alert("プロジェクト名・内容の名前・内容を入力してください。");
+      alert("プロジェクト名・タイトル・内容を入力してください。");
       return;
     }
 
-    memories.push(memory);
+    const url = 'https://script.google.com/macros/s/AKfycbwzS3XaYHIeLODSTjMDYfunnjUfSRWXgMKtRJPHoQUGyx8x6QMMoLgdLeV0XgduLWad/exec';
 
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(memories)
-    );
+    try {
 
-    alert("記憶を登録しました。");
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(memory)
+      });
 
-    document.getElementById("project").value = "";
-    document.getElementById("title").value = "";
-    document.getElementById("keywords").value = "";
-    document.getElementById("location").value = "";
-    document.getElementById("content").value = "";
+      const result = await response.text();
 
-    displayMemories();
+      console.log('Apps Script response:', result);
+
+      alert('記憶を送信しました。');
+
+    } catch (error) {
+
+      console.error(error);
+      alert('送信エラー：' + error.message);
+
+    }
   }
 
 
