@@ -351,6 +351,9 @@ async function displayMemories() {
 
     const memories = result.memories;
 
+    console.log("取得した記憶:", memories);
+    console.log("検索文字:", search);
+
     const filtered = memories.filter(memory => {
 
       const text = [
