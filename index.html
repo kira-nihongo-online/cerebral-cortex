@@ -234,12 +234,19 @@
   <section>
     <h2>記憶を検索</h2>
 
+    <!--==================================================*
+     * 記憶検索
+     *==================================================-->
+
     <div class="search-box">
       <input
         id="search"
         placeholder="プロジェクト名・種類・キーワードなどで検索"
-        oninput="displayMemories()"
       >
+
+      <button type="button" id="searchButton">
+        検索
+      </button>
     </div>
 
     <div id="memoryList"></div>
