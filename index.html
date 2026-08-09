@@ -259,47 +259,63 @@
   }
 
 
-  async function saveMemory() {
+/*==================================================*
+ * Cerebral Cortex - saveMemory()
+ * 保存成功後にフォームをクリア
+ *==================================================*/
 
-    const memory = {
-      project: document.getElementById("project").value,
-      type: document.getElementById("type").value,
-      title: document.getElementById("title").value,
-      keywords: document.getElementById("keywords").value,
-      location: document.getElementById("location").value,
-      content: document.getElementById("content").value
-    };
+async function saveMemory() {
 
-    if (!memory.project || !memory.title || !memory.content) {
-      alert("プロジェクト名・タイトル・内容を入力してください。");
+  const memory = {
+    project: document.getElementById("project").value,
+    type: document.getElementById("type").value,
+    title: document.getElementById("title").value,
+    keywords: document.getElementById("keywords").value,
+    location: document.getElementById("location").value,
+    content: document.getElementById("content").value
+  };
+
+  if (!memory.project || !memory.title || !memory.content) {
+    alert("プロジェクト名・タイトル・内容を入力してください。");
+    return;
+  }
+
+  const url = 'https://script.google.com/macros/s/AKfycbwzS3XaYHIeLODSTjMDYfunnjUfSRWXgMKtRJPHoQUGyx8x6QMMoLgdLeV0XgduLWad/exec';
+
+  try {
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(memory)
+    });
+
+    const result = await response.json();
+
+    console.log('Apps Script response:', result);
+
+    if (!result.success) {
+      alert('保存に失敗しました。');
       return;
     }
 
-    const url = 'https://script.google.com/macros/s/AKfycbwzS3XaYHIeLODSTjMDYfunnjUfSRWXgMKtRJPHoQUGyx8x6QMMoLgdLeV0XgduLWad/exec';
+    document.getElementById("project").value = "";
+    document.getElementById("title").value = "";
+    document.getElementById("keywords").value = "";
+    document.getElementById("location").value = "";
+    document.getElementById("content").value = "";
 
-    try {
+    alert('記憶を保存しました。');
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify(memory)
-      });
+  } catch (error) {
 
-      const result = await response.text();
+    console.error(error);
+    alert('送信エラー：' + error.message);
 
-      console.log('Apps Script response:', result);
-
-      alert('記憶を送信しました。');
-
-    } catch (error) {
-
-      console.error(error);
-      alert('送信エラー：' + error.message);
-
-    }
   }
+}
 
 /*==================================================*
  * Cerebral Cortex - displayMemories()
