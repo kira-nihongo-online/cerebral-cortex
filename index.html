@@ -318,7 +318,8 @@ async function saveMemory() {
 }
 
 /*==================================================*
- * Cerebral Cortex - GitHub検索対応 displayMemories()
+ * Cerebral Cortex - displayMemories()
+ * 空検索時は一覧を表示しない
  *==================================================*/
 
 async function displayMemories() {
@@ -327,7 +328,13 @@ async function displayMemories() {
   const search = document
     .getElementById("search")
     .value
+    .trim()
     .toLowerCase();
+
+  if (!search) {
+    list.innerHTML = "";
+    return;
+  }
 
   const url = 'https://script.google.com/macros/s/AKfycbwzS3XaYHIeLODSTjMDYfunnjUfSRWXgMKtRJPHoQUGyx8x6QMMoLgdLeV0XgduLWad/exec';
 
