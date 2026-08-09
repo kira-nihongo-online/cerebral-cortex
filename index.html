@@ -416,6 +416,14 @@ async function displayMemories() {
 }
 
 /*==================================================*
+ * Cerebral Cortex - 検索ボタン
+ *==================================================*/
+
+document.getElementById("searchButton").addEventListener("click", function() {
+  displayMemories();
+});
+
+/*==================================================*
  * Cerebral Cortex - escapeHtml() ＋ 初期表示
  *==================================================*/
   function escapeHtml(text) {
