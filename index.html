@@ -141,16 +141,44 @@
         grid-column: auto;
       }
     }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-brand img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .header-brand h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header-brand p {
+      margin: 5px 0 0;
+      color: #bbb;
+      font-size: 13px;
+    }    
+
   </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Cerebral Cortex</h1>
-  <p>Knowledge & Development Memory System</p>
+  <div class="header-brand">
+    <img src="トータルロゴ.png" alt="Cerebral Cortex">
+    <div>
+      <h1>Cerebral Cortex</h1>
+      <p>Knowledge & Development Memory System</p>
+    </div>
+  </div>
 </header>
-
 <main>
 
   <!-- 登録 -->
