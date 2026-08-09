@@ -1,10 +1,10 @@
-# saveMemoryテスト
+# saveMemoryテスト2
 
-- プロジェクト：テスト
+- プロジェクト：saveMemoryテスト1
 - 情報の種類：共通ルール
 - 検索キーワード：
 - 保存場所：
 
 ## 内容
 
-saveMemoryテスト
+saveMemoryテスト.md
