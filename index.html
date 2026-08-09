@@ -249,7 +249,9 @@
 
 
 <script>
-
+/*==================================================*
+ * Cerebral Cortex - saveMemory()
+ *==================================================*/
   const STORAGE_KEY = "cerebralCortexMemories";
 
   function getMemories() {
@@ -299,7 +301,9 @@
     }
   }
 
-
+/*==================================================*
+ * Cerebral Cortex - displayMemories()
+ *==================================================*/
   function displayMemories() {
 
     const list = document.getElementById("memoryList");
@@ -360,7 +364,9 @@
       .join("");
   }
 
-
+/*==================================================*
+ * Cerebral Cortex - escapeHtml() ＋ 初期表示
+ *==================================================*/
   function escapeHtml(text) {
 
     return text
