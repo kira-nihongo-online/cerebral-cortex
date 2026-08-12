@@ -405,7 +405,11 @@ async function displayMemories() {
             ${escapeHtml(memory.content)}
           </div>
 
-          <button type="button" class="gpt-send-button">
+          <button
+            type="button"
+            class="gpt-send-button"
+            onclick='sendToGPT(${JSON.stringify(memory).replace(/'/g, "&#39;")})'
+          >
             GPTに送信
           </button>
 
