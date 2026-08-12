@@ -405,6 +405,10 @@ async function displayMemories() {
             ${escapeHtml(memory.content)}
           </div>
 
+          <button type="button" class="gpt-send-button">
+            GPTに送信
+          </button>
+
         </div>
 
       `)
@@ -454,7 +458,7 @@ document.getElementById("search").addEventListener("keydown", function(event) {
 
 
   displayMemories();
-    
+
 </script>
 
 </body>
