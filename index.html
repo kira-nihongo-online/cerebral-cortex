@@ -456,6 +456,32 @@ document.getElementById("search").addEventListener("keydown", function(event) {
       .replace(/'/g, "&#039;");
   }
 
+    // ↓↓↓ ここに追加 ↓↓↓
+
+    function sendToGPT(memory) {
+
+      const text =
+  `【Cerebral Cortex】
+
+  タイトル：${memory.title}
+  情報の種類：${memory.type}
+  保存場所：${memory.path}
+
+  内容：
+  ${memory.content}`;
+
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          alert("GPTに送信する情報をコピーしました。");
+        })
+        .catch(error => {
+          console.error(error);
+          alert("コピーに失敗しました。");
+        });
+    }
+
+    // ↑↑↑ ここまで追加 ↑↑↑
+
 
   displayMemories();
 
