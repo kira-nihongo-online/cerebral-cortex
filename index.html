@@ -474,7 +474,41 @@ document.getElementById("search").addEventListener("keydown", function(event) {
       return;
     }
 
-    document.getElementById("content").value = memory.content;
+    const content = memory.content;
+
+    const getSection = (name, nextName) => {
+
+      const pattern = nextName
+        ? new RegExp(
+            `## ${name}\\s*\\n([\\s\\S]*?)(?=## ${nextName}\\s*\\n|$)`
+          )
+        : new RegExp(
+            `## ${name}\\s*\\n([\\s\\S]*)`
+          );
+
+      const match = content.match(pattern);
+
+      return match ? match[1].trim() : "";
+    };
+
+    document.getElementById("project").value =
+      getSection("プロジェクト", "情報の種類");
+
+    document.getElementById("type").value =
+      getSection("情報の種類", "検索キーワード");
+
+    document.getElementById("title").value =
+      memory.title;
+
+    document.getElementById("keywords").value =
+      getSection("検索キーワード", "保存場所");
+
+    document.getElementById("location").value =
+      getSection("保存場所", "内容");
+
+    document.getElementById("content").value =
+      getSection("内容");
+
   }
 
     // ↓↓↓ ここに追加 ↓↓↓
