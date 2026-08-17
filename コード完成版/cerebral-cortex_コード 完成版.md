@@ -407,11 +407,15 @@ async function displayMemories() {
      *==================================================*/
 
     list.innerHTML = filtered
-      .map(memory => `
+      .map((memory, index) => `
 
         <div class="memory">
 
-          <div class="memory-title">
+          <div
+            class="memory-title"
+            onclick="loadMemoryContent(${index})"
+            style="cursor: pointer;"
+          >
             ${escapeHtml(memory.title)}
           </div>
 
@@ -437,6 +441,8 @@ async function displayMemories() {
 
       `)
       .join("");
+
+    window.cortexSearchResults = filtered;
 
   } catch (error) {
 
@@ -478,6 +484,51 @@ document.getElementById("search").addEventListener("keydown", function(event) {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function loadMemoryContent(index) {
+
+    const memory = window.cortexSearchResults[index];
+
+    if (!memory) {
+      return;
+    }
+
+    const content = memory.content;
+
+    const getSection = (name, nextName) => {
+
+      const pattern = nextName
+        ? new RegExp(
+            `## ${name}\\s*\\n([\\s\\S]*?)(?=## ${nextName}\\s*\\n|$)`
+          )
+        : new RegExp(
+            `## ${name}\\s*\\n([\\s\\S]*)`
+          );
+
+      const match = content.match(pattern);
+
+      return match ? match[1].trim() : "";
+    };
+
+    document.getElementById("project").value =
+      getSection("プロジェクト", "情報の種類");
+
+    document.getElementById("type").value =
+      getSection("情報の種類", "検索キーワード");
+
+    document.getElementById("title").value =
+      memory.title;
+
+    document.getElementById("keywords").value =
+      getSection("検索キーワード", "保存場所");
+
+    document.getElementById("location").value =
+      getSection("保存場所", "内容");
+
+    document.getElementById("content").value =
+      getSection("内容");
+
   }
 
     // ↓↓↓ ここに追加 ↓↓↓
