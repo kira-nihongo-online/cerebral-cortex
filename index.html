@@ -387,11 +387,15 @@ async function displayMemories() {
      *==================================================*/
 
     list.innerHTML = filtered
-      .map(memory => `
+      .map((memory, index) => `
 
         <div class="memory">
 
-          <div class="memory-title">
+          <div
+            class="memory-title"
+            onclick="loadMemoryContent(${index})"
+            style="cursor: pointer;"
+          >
             ${escapeHtml(memory.title)}
           </div>
 
@@ -417,6 +421,8 @@ async function displayMemories() {
 
       `)
       .join("");
+
+    window.cortexSearchResults = filtered;
 
   } catch (error) {
 
@@ -458,6 +464,17 @@ document.getElementById("search").addEventListener("keydown", function(event) {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function loadMemoryContent(index) {
+
+    const memory = window.cortexSearchResults[index];
+
+    if (!memory) {
+      return;
+    }
+
+    document.getElementById("content").value = memory.content;
   }
 
     // ↓↓↓ ここに追加 ↓↓↓
