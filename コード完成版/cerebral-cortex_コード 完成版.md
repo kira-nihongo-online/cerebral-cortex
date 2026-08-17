@@ -126,13 +126,28 @@ Cerebral Cortex／コード完成版
     .memory {
       border: 1px solid #ddd;
       border-radius: 6px;
-      padding: 15px;
       margin-bottom: 12px;
+      overflow: hidden;
     }
 
     .memory-title {
       font-weight: bold;
       font-size: 16px;
+      padding: 15px;
+      cursor: pointer;
+    }
+
+    .memory-title:hover {
+      background: #f5f5f5;
+    }
+
+    .memory-details {
+      display: none;
+      padding: 0 15px 15px;
+    }
+
+    .memory.open .memory-details {
+      display: block;
     }
 
     .memory-meta {
@@ -413,29 +428,32 @@ async function displayMemories() {
 
           <div
             class="memory-title"
-            onclick="loadMemoryContent(${index})"
-            style="cursor: pointer;"
+            onclick="toggleMemory(${index})"
           >
             ${escapeHtml(memory.title)}
           </div>
 
-          <div class="memory-meta">
-            ${escapeHtml(memory.type)}
-            ／
-            ${escapeHtml(memory.path)}
-          </div>
+          <div class="memory-details">
 
-          <div class="memory-content">
-            ${escapeHtml(memory.content)}
-          </div>
+            <div class="memory-meta">
+              ${escapeHtml(memory.type)}
+              ／
+              ${escapeHtml(memory.path)}
+            </div>
 
-          <button
-            type="button"
-            class="gpt-send-button"
-            onclick='sendToGPT(${JSON.stringify(memory).replace(/'/g, "&#39;")})'
-          >
-            GPTに送信
-          </button>
+            <div class="memory-content">
+              ${escapeHtml(memory.content)}
+            </div>
+
+            <button
+              type="button"
+              class="gpt-send-button"
+              onclick='sendToGPT(${JSON.stringify(memory).replace(/'/g, "&#39;")})'
+            >
+              GPTに送信
+            </button>
+
+          </div>
 
         </div>
 
@@ -443,7 +461,6 @@ async function displayMemories() {
       .join("");
 
     window.cortexSearchResults = filtered;
-
   } catch (error) {
 
     console.error(error);
@@ -484,6 +501,20 @@ document.getElementById("search").addEventListener("keydown", function(event) {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function toggleMemory(index) {
+
+    const memories = document.querySelectorAll(".memory");
+    const memory = memories[index];
+
+    if (!memory) {
+      return;
+    }
+
+    memory.classList.toggle("open");
+
+    loadMemoryContent(index);
   }
 
   function loadMemoryContent(index) {
