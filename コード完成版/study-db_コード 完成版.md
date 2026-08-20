@@ -10,7 +10,7 @@ Study DB
 
 ## 検索キーワード
 
-Study DB コード 完成版 GitHub
+Study DB コード 完成版 GitHub//2026.8.80
 
 ## 保存場所
 
@@ -244,8 +244,6 @@ body{
 
     <span id="title"></span>
 
-    <button id="settingBtn">⚙</button>
-
     <input
       type="text"
       id="searchBox"
@@ -340,6 +338,11 @@ function updateTitle() {
 
   const titleEl = document.getElementById("title");
 
+  if (getLesson() === "0") {
+    titleEl.textContent = "Study DB";
+    return;
+  }
+
   if (!cards.length) {
     titleEl.textContent = "Study DB";
     return;
@@ -362,93 +365,6 @@ function setHeaderLogo() {
 
 }
 
-// ==============================
-// 設定
-// ==============================
-function openSettings(){
-
-  const settings = getSettings();
-
-  document.querySelector(
-    `input[name="sound"][value="${settings.sound}"]`
-  ).checked = true;
-
-  document.querySelector(
-    `input[name="memo"][value="${settings.memo}"]`
-  ).checked = true;
-
-  const orderEl = document.querySelector(
-    `input[name="order"][value="${settings.order}"]`
-  );
-
-  if(orderEl) orderEl.checked = true;
-
-  document.getElementById("settingModal").style.display = "block";
-
-}
-
-function closeSettings(){
-
-  document.getElementById("settingModal").style.display = "none";
-
-}
-
-function saveSettings(){
-
-  const sound =
-    document.querySelector('input[name="sound"]:checked').value;
-
-  const memo =
-    document.querySelector('input[name="memo"]:checked').value;
-
-  const order =
-    document.querySelector('input[name="order"]:checked').value;
-
-  localStorage.setItem("tangoSettings", JSON.stringify({
-    sound: sound,
-    memo: memo,
-    order: order
-  }));
-
-  closeSettings();
-
-}
-
-function getSettings() {
-
-  const settings = Object.assign(
-    {
-      sound:"on",
-      memo:"on",
-      order:"normal"
-    },
-    JSON.parse(localStorage.getItem("tangoSettings")) || {}
-  );
-
-  document.querySelectorAll('input[name="sound"]').forEach(r => {
-    r.checked = (r.value === settings.sound);
-  });
-
-  document.querySelectorAll('input[name="memo"]').forEach(r => {
-    r.checked = (r.value === settings.memo);
-  });
-
-  document.querySelectorAll('input[name="order"]').forEach(r => {
-    r.checked = (r.value === settings.order);
-  });
-
-  return settings;
-
-}
-
-document.getElementById("settingBtn").addEventListener("click", (e) => {
-
-  e.stopPropagation();
-
-  openSettings();
-
-});
-
 // =========================
 // 初期起動
 // =========================
@@ -468,20 +384,12 @@ async function initApp() {
 
   const lesson = getLesson();
 
-  if (lesson) {
+  if (lesson && lesson !== "0") {
 
     cards = cards.filter(
       c => String(c.lessonNo) === String(lesson)
     );
 
-  }
-
-  getSettings();
-
-  const settings = getSettings();
-
-  if(settings.order === "random"){
-    cards.sort(() => Math.random() - 0.5);
   }
 
   // =========================
@@ -523,7 +431,9 @@ async function initApp() {
   // 初回表示
   updateTitle();
 
-  showList();
+  if (lesson !== "0") {
+    showList();
+  }
 
   const searchBox = document.getElementById("searchBox");
 
@@ -644,44 +554,7 @@ async function initApp() {
 
 initApp();
 </script>
-<!-- ==============================
-【設定モーダル】
-============================== -->
-<div id="settingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:3000;">
 
-  <div style="background:#fff; width:90%; max-width:400px; margin:80px auto; padding:20px; border-radius:10px; max-height:80vh; overflow:auto;">
-
-    <h3>設定</h3>
-
-
-
-    <!-- 音声 -->
-    <div class="setting-row">
-      <span class="label">音声：</span>
-      <label><input type="radio" name="sound" value="on"> ON</label>
-      <label><input type="radio" name="sound" value="off"> OFF</label>
-    </div>
-
-    <!-- メモ -->
-    <div class="setting-row">
-      <span class="label">メモ：</span>
-      <label><input type="radio" name="memo" value="on"> ON</label>
-      <label><input type="radio" name="memo" value="off"> OFF</label>
-    </div>
-
-    <!-- ★ここに追加 -->
-    <div class="setting-row">
-      <span class="label">順番：</span>
-      <label><input type="radio" name="order" value="normal"> 通常</label>
-      <label><input type="radio" name="order" value="random"> ランダム</label>
-    </div>
-
-    <br>
-
-    <button onclick="saveSettings()">保存</button>
-    <button onclick="closeSettings()">閉じる</button>
-
-  </div>
 </div>
 </body>
 </html>
