@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-漢字道場
+漢字道場_2026.8.22
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@
 
 ## 検索キーワード
 
-漢字道場、GAS、Google Apps Script、doGet、getLessonData、generateLessonUrls、setFileIds_1_10、setFileIds_11_20、setFileIds_21_30、漢字リスト、URL発行、FileId
+漢字道場、kanji-dojo、GASコード
 
 ## 保存場所
 
-その他/漢字道場_GASコード.md
+GitHub／GAS
 
 ## 内容
 
