@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-PDF→PNG_2026.8.22
+PDF→PNG
 
 ## 情報の種類
 
@@ -10,7 +10,7 @@ PDF→PNG_2026.8.22
 
 ## 検索キーワード
 
-PDF→PNG、pdf-to-png、仕様
+PDF→PNG、pdf-to-png、2026.8.22
 
 ## 保存場所
 
