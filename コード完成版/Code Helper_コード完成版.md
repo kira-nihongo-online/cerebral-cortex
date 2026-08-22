@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Code Helper
+Code Helper_2026.8.22
 
 ## 情報の種類
 
@@ -14,7 +14,7 @@ Code Helper、code-helper、コード完成版
 
 ## 保存場所
 
-GitHub 
+GitHub
 
 ## 内容
 
