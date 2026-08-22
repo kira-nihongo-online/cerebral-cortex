@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Cerebral Cortex
+Cerebral Cortex_2026.8.20
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@ Cerebral Cortex
 
 ## 検索キーワード
 
-Cerebral Cortex 仕様 記憶登録 記憶検索 GPT送信 フォーム読み戻し//2026.8.20
+Cerebral Cortex、cerebral-cortex、仕様
 
 ## 保存場所
 
-Cerebral Cortex／仕様
+GitHub／GAS
 
 ## 内容
 
