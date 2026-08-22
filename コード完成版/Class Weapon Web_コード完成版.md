@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Class Weapon Web
+Class Weapon Web_2026.8.22
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@ Class Weapon Web
 
 ## 検索キーワード
 
-Class Weapon Web、class-weapon-web、index.html、コード完成版、授業翻訳、翻訳結果、単語サポート
+Class Weapon Web、class-weapon-web、コード完成版
 
 ## 保存場所
 
-GitHub / projects / class-weapon-web
+GitHub
 
 ## 内容
 
