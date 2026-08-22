@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-漢字テストメーカー
+漢字テストメーカー_2026.8.22
 
 ## 情報の種類
 
@@ -10,7 +10,7 @@
 
 ## 検索キーワード
 
-漢字テストメーカー、GASコード、generateTestSet、getSavedTestSet、doGet、exportLessonCsv、normalize、createImageIdList、runCreatePDF、createTestPDF、createPDF
+漢字テストメーカー、kanji-test-maker、GASコード
 
 ## 保存場所
 
