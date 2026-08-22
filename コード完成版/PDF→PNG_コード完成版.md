@@ -10,7 +10,7 @@ PDF→PNG
 
 ## 検索キーワード
 
-PDF, PNG、2026.8.22
+PDF, PNG、pdf-to-png、2026.8.22
 
 ## 保存場所
 
