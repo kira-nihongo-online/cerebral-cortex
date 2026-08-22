@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Cerebral Cortex
+Cerebral Cortex_2026.8.22
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@ Cerebral Cortex
 
 ## 検索キーワード
 
-Cerebral Cortex 、2026.8.22
+Cerebral Cortex 、cerebral-cortex、コード 完成版
 
 ## 保存場所
 
-Cerebral Cortex／コード完成版
+GitHub／GAS
 
 ## 内容
 
