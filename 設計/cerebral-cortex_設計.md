@@ -14,7 +14,7 @@ Cerebral Cortex、cerebral-cortex、設計
 
 ## 保存場所
 
-GitHub
+GitHub／GAS
 
 ## 内容
 
