@@ -10,7 +10,7 @@
 
 ## 検索キーワード
 
-漢字テストメーカー、GASコード、generateTestSet、getSavedTestSet、doGet、exportLessonCsv、normalize、createImageIdList、runCreatePDF、createTestPDF、createPDF
+漢字テストメーカー、2026.8.22
 
 ## 保存場所
 
@@ -81,42 +81,7 @@ function generateTestSet(lesson) {
   const shuffledB = shuffle([...list]);
   const testB = shuffledB.slice(0, 20);
 
-  // ==============================
-  // 発行番号作成
-  // 形式：課番号-月/日-001
-  // ==============================
-
-  const today = new Date();
-
-  const month = today.getMonth() + 1;
-  const day = today.getDate();
-
-  const dateKey =
-    Number(lesson) + "-" +
-    month + "/" +
-    day;
-
-  const properties = PropertiesService.getScriptProperties();
-
-  const countKey = "KANJI_ISSUE_COUNT_" + dateKey;
-
-  let count = Number(properties.getProperty(countKey) || 0);
-
-  count++;
-
-  properties.setProperty(countKey, String(count));
-
-  const issueId =
-    dateKey + "-" +
-    String(count).padStart(3, "0");
-
-
-  // ==============================
-  // 問題セット
-  // ==============================
-
   const result = {
-    issueId: issueId,
     A: testA,
     B: testB
   };
@@ -125,11 +90,12 @@ function generateTestSet(lesson) {
   // 問題保存（スライドとPDF一致）
   // ==============================
   const cache = CacheService.getScriptCache();
-  cache.put("KANJI_TEST_" + lesson, JSON.stringify(result), 3600);
+  cache.put("KANJI_TEST_" + lesson, JSON.stringify(result), 21600);
 
   return result;
 
 }
+
 
 // ================================
 // 保存された問題取得
@@ -144,9 +110,10 @@ function getSavedTestSet(lesson){
     return JSON.parse(data);
   }
 
-  return null;
+  return generateTestSet(lesson);
 
 }
+
 
 // ================================
 // Webアプリ入口
@@ -155,26 +122,6 @@ function getSavedTestSet(lesson){
 function doGet(e){
 
   const lesson = Number(e.parameter.lesson) || 1;
-
-  // ------------------------------
-  // GitHub用 キャッシュクリア
-  // ------------------------------
-  if (e.parameter.mode == "clear") {
-
-    const cache = CacheService.getScriptCache();
-
-    cache.remove("KANJI_TEST_" + lesson);
-
-    return ContentService
-      .createTextOutput(
-        JSON.stringify({
-          success: true,
-          lesson: lesson
-        })
-      )
-      .setMimeType(ContentService.MimeType.JSON);
-
-  }
 
   // ------------------------------
   // GitHub用 JSON
@@ -187,77 +134,6 @@ function doGet(e){
       .createTextOutput(JSON.stringify(data))
       .setMimeType(ContentService.MimeType.JSON);
 
-  }
-
-    // ------------------------------
-  // GIT用 PNGプレビュー
-  // ------------------------------
-  if (e.parameter.mode == "png") {
-
-    const data = getSavedTestSet(lesson);
-
-    if (!data) {
-      return ContentService
-        .createTextOutput("問題データがありません")
-        .setMimeType(ContentService.MimeType.TEXT);
-    }
-
-    const type = e.parameter.type;
-    const isAnswer = e.parameter.answer === "true";
-
-    const list =
-      type === "A" ? data.A :
-      type === "B" ? data.B :
-      null;
-
-    if (!list) {
-      return ContentService
-        .createTextOutput("画像タイプが不正です")
-        .setMimeType(ContentService.MimeType.TEXT);
-    }
-
-        let html =
-        "<html><head><meta charset='UTF-8'>" +
-        "<style>" +
-        "body{margin:20px;font-family:Arial,sans-serif;}" +
-        ".title{font-size:24px;font-weight:bold;margin-bottom:20px;}" +
-        ".grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}" +
-        ".card{border:1px solid #ccc;padding:10px;text-align:center;}" +
-        ".card img{width:100%;height:auto;}" +
-        "</style></head><body>" +
-
-        "<div class='title'>" +
-        "画像" + type +
-        (isAnswer ? "　答えプレビュー" : "　問題プレビュー") +
-        "</div>" +
-
-        "<div class='grid'>";
-
-      list.forEach(function(item, index){
-
-        const imageUrl =
-          "https://drive.google.com/thumbnail?id=" +
-          item.id +
-          "&sz=w1000";
-
-        html +=
-          "<div class='card'>" +
-          "<div>" + (index + 1) + "</div>" +
-          "<img src='" + imageUrl + "'>" +
-          "</div>";
-
-      });
-
-      html +=
-        "</div>" +
-        "</body></html>";
-
-      return HtmlService
-        .createHtmlOutput(html)
-        .setTitle(
-          "画像" + type +
-          (isAnswer ? " 答えプレビュー" : " 問題プレビュー")
-        );
   }
 
   // ------------------------------
@@ -329,83 +205,35 @@ function normalize(text) {
   return text.toString().replace(/\s+/g, "").trim();
 }
 
-// ==============================
-// 指定した課のTestCards画像IDリスト作成
-// ==============================
 
+// ==============================
+// TestCards画像IDリスト作成
+// ==============================
 function createImageIdList() {
 
-  // ------------------------------
-  // URL発行シートから課番号取得
-  // ------------------------------
+  const TESTCARDS_FOLDER_ID = "1wKxkySp2_z5cdyL6V6zjliYkIbYOv9go";
 
-  const controlSheet =
-    SpreadsheetApp.getActiveSpreadsheet()
-      .getSheetByName("URL発行");
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("漢字リスト");
+  const data = sheet.getDataRange().getValues();
 
-  const lesson =
-    Number(controlSheet.getRange("B2").getValue());
-
-  if (!lesson) {
-    SpreadsheetApp.getUi().alert("課番号を指定してください");
-    return;
-  }
-
-  // ------------------------------
-  // 漢字リスト取得
-  // ------------------------------
-
-  const sheet =
-    SpreadsheetApp.getActiveSpreadsheet()
-      .getSheetByName("漢字リスト");
-
-  const data =
-    sheet.getDataRange().getValues();
-
-  // ------------------------------
-  // TestCardsフォルダ
-  // ------------------------------
-
-  const TESTCARDS_FOLDER_ID =
-    "1wKxkySp2_z5cdyL6V6zjliYkIbYOv9go";
-
-  const root =
-    DriveApp.getFolderById(TESTCARDS_FOLDER_ID);
-
-  const lessonFolders =
-    root.getFolders();
+  const root = DriveApp.getFolderById(TESTCARDS_FOLDER_ID);
+  const lessonFolders = root.getFolders();
 
   const imageMap = {};
 
-  // ------------------------------
-  // PNG画像ID取得
-  // ------------------------------
-
   while (lessonFolders.hasNext()) {
 
-    const lessonFolder =
-      lessonFolders.next();
-
-    const files =
-      lessonFolder.getFiles();
+    const lessonFolder = lessonFolders.next();
+    const files = lessonFolder.getFiles();
 
     while (files.hasNext()) {
 
-      const file =
-        files.next();
+      const file = files.next();
 
-      if (
-        file.getName()
-          .toLowerCase()
-          .endsWith(".png")
-      ) {
+      if (file.getName().toLowerCase().endsWith(".png")) {
 
-        const name =
-          file.getName()
-            .replace(/\.png$/i, "");
-
-        const id =
-          file.getId();
+        const name = file.getName().replace(/\.png$/i, "");
+        const id = file.getId();
 
         imageMap[name] = id;
 
@@ -415,205 +243,130 @@ function createImageIdList() {
 
   }
 
-  // ------------------------------
-  // 指定した課だけ画像IDを設定
-  // ------------------------------
-
   for (let i = 1; i < data.length; i++) {
 
-    if (Number(data[i][0]) !== lesson) {
-      continue;
-    }
-
-    const kanji =
-      data[i][2];
+    const kanji = data[i][2];
 
     if (imageMap[kanji]) {
-
-      sheet
-        .getRange(i + 1, 5)
-        .setValue(imageMap[kanji]);
-
+      sheet.getRange(i + 1, 5).setValue(imageMap[kanji]);
     }
 
   }
 
-  SpreadsheetApp.getUi().alert(
-    lesson + "課のPNG画像処理が完了しました"
-  );
+  Logger.log("画像ID作成完了");
 
 }
 
+
 // ================================
-// 指定した課のキャッシュクリア
+// PDF生成実行（シートボタン用）
 // ================================
 
-function clearLessonCacheFromSheet() {
+function runCreatePDF(){
 
-  const sheet =
-    SpreadsheetApp.getActiveSpreadsheet()
-      .getSheetByName("URL発行");
+  const ui = SpreadsheetApp.getUi();
 
-  const lesson =
-    Number(sheet.getRange("B2").getValue());
-
-  if (!lesson) {
-    SpreadsheetApp.getUi().alert("課番号を指定してください");
-    return;
-  }
-
-  const cache =
-    CacheService.getScriptCache();
-
-  cache.remove("KANJI_TEST_" + lesson);
-
-  SpreadsheetApp.getUi().alert(
-    lesson + "課のキャッシュをクリアしました"
+  const res = ui.prompt(
+    "PDF作成",
+    "課番号を入力してください（例：27）",
+    ui.ButtonSet.OK_CANCEL
   );
+
+  if(res.getSelectedButton() != ui.Button.OK) return;
+
+  const lesson = res.getResponseText();
+
+  createTestPDF(lesson);
+
+  ui.alert("PDF作成完了");
 
 }
 
+
 // ================================
-// 指定した課の問題を正式発行
+// PDF作成
 // ================================
 
-function issueTestSetFromSheet() {
-
-  const sheet =
-    SpreadsheetApp.getActiveSpreadsheet()
-      .getSheetByName("URL発行");
-
-  const lesson =
-    Number(sheet.getRange("B2").getValue());
-
-  if (!lesson) {
-    SpreadsheetApp.getUi().alert("課番号を指定してください");
-    return;
-  }
+function createTestPDF(lesson){
 
   const data = generateTestSet(lesson);
 
-  SpreadsheetApp.getUi().alert(
-    lesson + "課の問題を発行しました\n\n発行番号：" + data.issueId
-  );
+  createPDF("A", lesson, data.A, false);
+  createPDF("A", lesson, data.A, true);
+
+  createPDF("B", lesson, data.B, false);
+  createPDF("B", lesson, data.B, true);
 
 }
 
-// ==============================
-// GITを開く
-// ==============================
 
-function openGitUrlFromSheet() {
+// ================================
+// PDF生成本体
+// ================================
 
-  const sheet =
-    SpreadsheetApp.getActiveSpreadsheet()
-      .getSheetByName("URL発行");
+function createPDF(type, lesson, list, isAnswer){
 
-  const url =
-    sheet.getRange("B3").getValue();
+  const template = HtmlService.createTemplateFromFile("pdf");
 
-  if (!url) {
-    SpreadsheetApp.getUi().alert("GitHub URLがありません");
-    return;
-  }
+  template.type = type;
+  template.lesson = lesson;
+  template.list = list;
+  template.isAnswer = isAnswer;
 
-    const html = HtmlService.createHtmlOutput(
-    '<a href="' + url + '" target="_blank" ' +
-    'onclick="google.script.host.close()" ' +
-    'style="font-size:20px;">GITを開く</a>'
-  );
+  const html = template.evaluate().getContent();
 
-  SpreadsheetApp.getUi().showModalDialog(
-    html,
-    "GITを開く"
-  );
+  const blob = Utilities.newBlob(html,"text/html")
+  .getAs("application/pdf");
+
+  const name =
+    "KanjiTest_" +
+    type +
+    "_Lesson" +
+    lesson +
+    (isAnswer ? "_Answer" : "_Question") +
+    ".pdf";
+
+  DriveApp.createFile(blob).setName(name);
+
 }
 
-### 現在の構成
+問題生成エンジン、保存された問題取得、Webアプリ入口、課CSVダウンロード、空白・前後スペース除去、TestCards画像IDリスト作成、PDF生成実行、PDF作成、PDF生成本体のGASコード。
 
-漢字テストメーカーの問題生成・保存・Webアプリ表示・画像ID管理・GIT連携を行うGASコード。
+generateTestSet(lesson)：
+「漢字リスト」シートから指定した課のデータを取得し、A問題とB問題をそれぞれシャッフルして最大20問ずつ作成する。取得するデータはC列の漢字、D列の読み、E列のID。作成したA・B問題をScript Cacheに「KANJI_TEST_」＋課番号のキーで21600秒保存する。
 
-PDF生成機能は削除済み。現在はPDFを使用しない。
+getSavedTestSet(lesson)：
+Script Cacheに保存された問題セットを取得する。保存されていない場合はgenerateTestSet(lesson)を実行する。
 
-### generateTestSet(lesson)
+doGet(e)：
+lessonパラメータから課番号を取得する。mode=jsonの場合は問題セットをJSON形式で返す。それ以外の場合はHTMLファイル「dual」をテンプレートとして表示する。
 
-「漢字リスト」シートから指定した課のデータを取得し、A問題とB問題をそれぞれシャッフルして最大20問ずつ作成する。
+exportLessonCsv()：
+入力した課番号をもとに「漢字リスト」シートから該当するデータを抽出し、「課,No,漢字,読み」のCSVを作成する。ダウンロード名はtest_cards.csv。
 
-取得するデータはC列の漢字、D列の読み、E列の画像ID。
-
-A・B問題と発行番号を問題セットとして作成し、Script Cacheに保存する。
-
-キャッシュ保持時間は3600秒（1時間）。
-
-### getSavedTestSet(lesson)
-
-Script Cacheに保存された問題セットを取得する。
-
-保存されていない場合はnullを返す。
-
-### doGet(e)
-
-lessonパラメータから課番号を取得する。
-
-mode=clearの場合は、指定課の問題キャッシュを削除する。
-
-mode=jsonの場合は、保存された問題セットをJSON形式で返す。
-
-mode=pngの場合は、保存されたA/B問題セットを使用して画像プレビューを生成する。
-
-それ以外の場合はHTMLファイル「dual」をテンプレートとして表示する。
-
-### exportLessonCsv()
-
-入力した課番号をもとに「漢字リスト」シートから該当データを抽出し、「課,No,漢字,読み」のCSVを作成する。
-
-### normalize(text)
-
+normalize(text)：
 文字列から空白文字を除去し、前後の空白を取り除く。
 
-### createImageIdList()
+createImageIdList()：
+Google Driveの指定フォルダ内にあるサブフォルダからPNG画像を取得し、画像ファイル名と「漢字リスト」シートC列の漢字を照合する。一致した画像のGoogle DriveファイルIDをE列へ設定する。
 
-Google DriveのTestCardsフォルダ内にあるPNG画像を取得し、画像ファイル名と「漢字リスト」シートC列の漢字を照合する。
+runCreatePDF()：
+課番号を入力し、createTestPDF(lesson)を実行してPDFを作成する。
 
-一致した画像のGoogle DriveファイルIDをE列へ設定する。
+createTestPDF(lesson)：
+generateTestSet(lesson)で作成したA問題・B問題について、それぞれ問題PDFと解答PDFを作成する。
 
-### clearLessonCacheFromSheet()
+createPDF(type, lesson, list, isAnswer)：
+HTMLファイル「pdf」をテンプレートとして使用し、指定された問題データからPDFを生成する。生成するファイル名は「KanjiTest_」＋問題タイプ＋「_Lesson」＋課番号＋「_Question.pdf」または「_Answer.pdf」。
 
-「URL発行」シートのB2から課番号を取得し、その課の問題キャッシュを削除する。
-
-### issueTestSetFromSheet()
-
-「URL発行」シートのB2から課番号を取得し、generateTestSet(lesson)を実行して問題を正式発行する。
-
-新しいA/B問題セットと発行番号を作成して保存し、発行番号を表示する。
-
-### openGitUrlFromSheet()
-
-「URL発行」シートのB3に設定されたGIT URLを取得し、ポップアップからGITを開く。
-
-「GITを開く」をクリックするとGITを新しいタブで開き、ポップアップを閉じる。
-
-### 現在の運用
-
-PDFを使用せず、正式発行した問題セットを基準にGIT側でテスト・問題プレビュー・答えプレビューを表示する。
-
-正式発行したA/B問題セットと発行番号をScript Cacheに保存し、GIT側は保存された問題セットを取得して使用する。
-
-画像問題とテスト問題は、同じA/B問題セットに含まれる画像IDを使用して表示する。
-
-GIT側ではA/B問題・答えのプレビューをA4サイズで表示し、PNG保存できる。
-
-### コード内で参照されているスプレッドシートのシート名
-
+コード内で参照されているスプレッドシートのシート名：
 「漢字リスト」
-「URL発行」
 
-### コード内で参照されているHTMLファイル
-
+コード内で参照されているHTMLファイル：
 「dual」
+「pdf」
 
-### コード内で使用されているGoogle DriveフォルダID
-
+コード内で使用されているGoogle DriveフォルダID：
 「1wKxkySp2_z5cdyL6V6zjliYkIbYOv9go」
 
 上記以外のスプレッドシート構成、HTMLファイルの内容、Google Driveフォルダ名、GitHubリポジトリ構成については、このコードだけでは確認できない。
