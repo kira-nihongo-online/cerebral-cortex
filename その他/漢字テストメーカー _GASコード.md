@@ -10,7 +10,7 @@
 
 ## 検索キーワード
 
-漢字テストメーカー、2026.8.22
+漢字テストメーカー、GASコード、generateTestSet、getSavedTestSet、doGet、exportLessonCsv、normalize、createImageIdList、runCreatePDF、createTestPDF、createPDF
 
 ## 保存場所
 
