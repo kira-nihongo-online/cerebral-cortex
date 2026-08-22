@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-一文字道場
+一文字道場_2026.8.22
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@
 
 ## 検索キーワード
 
-一文字道場 GAS Google Apps Script スプレッドシート 一文字リスト Google Drive 画像 JSON API
+一文字道場、hitomoji-dojo、GASコード
 
 ## 保存場所
 
-一文字道場／その他
+GitHub／GAS
 
 ## 内容
 
