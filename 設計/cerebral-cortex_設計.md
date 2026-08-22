@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Cerebral Cortex_2026.8.22
+Cerebral Cortex_2026.8.20
 
 ## 情報の種類
 
@@ -14,7 +14,7 @@ Cerebral Cortex、cerebral-cortex、設計
 
 ## 保存場所
 
-GitHub／GAS
+GitHub
 
 ## 内容
 
