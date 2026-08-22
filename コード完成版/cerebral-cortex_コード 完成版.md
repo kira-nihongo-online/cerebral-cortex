@@ -10,7 +10,7 @@ Cerebral Cortex
 
 ## 検索キーワード
 
-Cerebral Cortex コード 完成版 GitHub
+Cerebral Cortex 、2026.8.22
 
 ## 保存場所
 
