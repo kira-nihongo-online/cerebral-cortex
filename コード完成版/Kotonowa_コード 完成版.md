@@ -1,0 +1,207 @@
+# Kotonowa_コード 完成版
+
+## プロジェクト
+
+Kotonowa_2026.8.22
+
+## 情報の種類
+
+コード完成版
+
+## 検索キーワード
+
+Kotonowa、kotonowa、コード 完成版
+
+## 保存場所
+
+GitHub
+
+## 内容
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Kotonowa</title>
+
+<style>
+
+html,body{
+  height:100%;
+  margin:0;
+}
+
+body{
+  font-family:sans-serif;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+}
+
+h2{
+  margin-top:15px;
+  font-size:16px;
+  border-bottom:1px solid #ccc;
+  padding-bottom:4px;
+}
+
+textarea{
+  width:100%;
+  height:36vh;
+  margin-top:10px;
+  padding:14px;
+  box-sizing:border-box;
+  resize:none;
+  font-size:40px;
+  line-height:1.5;
+}
+
+button{
+  margin-top:5px;
+  padding:6px;
+  width:100%;
+  cursor:pointer;
+}
+
+.langButtons{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+.langButtons button,
+.buttons button{
+  flex:1;
+  height:50px;
+  font-size:28px;
+  font-weight:bold;
+  background:#f5f5f5;
+  border:1px solid #ccc;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.langButtons button.active{
+  background:#d32f2f;
+  color:white;
+  border-color:#d32f2f;
+}
+
+.buttons{
+  display:flex;
+  gap:8px;
+  margin-top:18px;
+  margin-bottom:12px;
+}
+
+.result{
+  background:#f5f5f5;
+  border:1px solid #ccc;
+  margin-top:0;
+  padding:14px;
+  min-height:30vh;
+  font-size:40px;
+  line-height:1.5;
+}
+
+/* ========================== */
+/* タイ語だけ見やすく調整 */
+.translated{
+  font-size:1em;
+  font-weight:normal;
+  line-height:1.5;
+}
+
+.section{
+  margin-bottom:20px;
+}
+
+.wordRow{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #ddd;
+  padding:3px 0;
+  cursor:pointer;
+}
+
+#micBtn.listening{
+  background:#d32f2f;
+  color:#fff;
+  border-color:#d32f2f;
+}
+
+.inputArea{
+    position:relative;
+}
+
+.copyBtn{
+    position:absolute;
+    right:12px;
+    bottom:12px;
+    font-size:40px;
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ===== 授業翻訳 ===== -->
+
+<!-- ===== ロゴ ===== -->
+<div style="display:flex; align-items:center; justify-content:center; gap:12px; margin:35px 0 25px 0;">
+  <img src="トータルロゴ.png" alt="Kotonowa" style="width:48px; height:48px;">
+  <h1 style="margin:0; font-size:40px; font-weight:bold;">Kotonowa</h1>
+</div>
+
+<div class="topArea">
+</div>
+
+<div>入力</div>
+
+<div class="langButtons">
+  <button id="inputJpBtn">JP</button>
+  <button id="inputThBtn">TH</button>
+  <button id="inputEnBtn">EN</button>
+</div>
+
+<div>翻訳</div>
+
+<div class="langButtons">
+  <button id="jpBtn">JP</button>
+  <button id="thBtn" class="active">TH</button>
+  <button id="enBtn">EN</button>
+</div>
+
+<div class="inputArea">
+
+<textarea id="jpInput" placeholder="入力してください"></textarea>
+
+<span class="copyBtn" id="copyInputBtn">📋</span>
+
+</div>
+
+<div class="buttons">
+  <button id="micBtn">🎤</button>
+  <button id="translateBtn">🌐</button>
+  <button id="clearBtn">🗑️</button>
+  <button id="speakBtn">🔊</button>
+</div>
+
+<div class="inputArea">
+
+  <div class="result" id="translateResult"></div>
+
+  <span class="copyBtn" id="copyResultBtn">📋</span>
+
+</div>
+
+<script src="panel.js"></script>
+
+</body>
+</html>
