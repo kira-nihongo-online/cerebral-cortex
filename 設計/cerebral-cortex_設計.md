@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Cerebral Cortex
+Cerebral Cortex_2026.8.22
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@ Cerebral Cortex
 
 ## 検索キーワード
 
-Cerebral Cortex 設計 Knowledge Development Memory System 記憶管理 検索 GPT送信//2026.8.20
+Cerebral Cortex、cerebral-cortex、設計
 
 ## 保存場所
 
-Cerebral Cortex／設計
+GitHub／GAS
 
 ## 内容
 
@@ -86,5 +86,3 @@ Webアプリ本体は index.html を中心とし、ロゴ画像を画面ヘッ�
 記憶データの保存および検索には、Google Apps ScriptのWebアプリURLを使用する。
 
 保存成功時には登録フォームをクリアし、保存結果をユーザーへ通知する。
-
-
