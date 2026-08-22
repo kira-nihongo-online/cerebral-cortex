@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-単語道場
+単語道場_2026.8.22
 
 ## 情報の種類
 
@@ -10,11 +10,11 @@
 
 ## 検索キーワード
 
-単語道場、tango-dojo、GAS、Google Apps Script、スプレッドシート、単語リスト、画像ID、意味画像、日本語画像、JSON API、Drive
+単語道場、tango-dojo、GASコード
 
 ## 保存場所
 
-GitHub / projects / tango-dojo
+GitHub／GAS
 
 ## 内容
 
