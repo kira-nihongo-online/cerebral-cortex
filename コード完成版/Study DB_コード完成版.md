@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-Study DB_2026.8.22
+Study DB_2026.8.24
 
 ## 情報の種類
 
@@ -231,6 +231,78 @@ body{
   width:60px;
 }
 
+/* =========================
+   学習方向モーダル
+========================= */
+
+#studyModeModal {
+  display: none;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.5);
+
+  z-index: 4000;
+
+  justify-content: center;
+  align-items: center;
+}
+
+#studyModeModal.open {
+  display: flex;
+}
+
+#studyModeModalBox {
+  width: 90%;
+  max-width: 400px;
+
+  background: #fff;
+
+  padding: 25px;
+
+  border-radius: 10px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+#studyModeTitle {
+  margin: 0 0 25px;
+
+  font-size: 22px;
+}
+
+.study-mode-button {
+  display: block;
+
+  width: 100%;
+
+  margin: 10px 0;
+
+  padding: 14px 10px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #222;
+  color: #fff;
+
+  font-size: 17px;
+
+  cursor: pointer;
+}
+
+#studyModeCancel {
+  background: #ddd;
+  color: #333;
+}
+
 </style>
 </head>
 
@@ -243,6 +315,8 @@ body{
     <img id="headerLogo">
 
     <span id="title"></span>
+
+    <button id="settingBtn">⚙</button>
 
     <input
       type="text"
@@ -365,6 +439,23 @@ function setHeaderLogo() {
 
 }
 
+// ==============================
+// 設定
+// ==============================
+
+document.getElementById("settingBtn").addEventListener("click", (e) => {
+
+  e.stopPropagation();
+
+  const modal =
+    document.getElementById("studyModeModal");
+
+  if (modal) {
+    modal.classList.add("open");
+  }
+
+});
+
 // =========================
 // 初期起動
 // =========================
@@ -433,6 +524,65 @@ async function initApp() {
 
   if (lesson !== "0") {
     showList();
+  }
+
+  // =========================
+  // 学習方向モーダル
+  // =========================
+
+  if (lesson && lesson !== "0") {
+
+    const modal =
+      document.getElementById("studyModeModal");
+
+    const title =
+      document.getElementById("studyModeTitle");
+
+    const cancelButton =
+      document.getElementById("studyModeCancel");
+
+    const jpThButton =
+      document.getElementById("studyModeJpTh");
+
+    const thJpButton =
+      document.getElementById("studyModeThJp");
+
+    title.textContent =
+      `${cards[0]?.lesson || "この課"}を学習`;
+
+    modal.classList.add("open");
+
+    cancelButton.addEventListener("click", function() {
+
+      modal.classList.remove("open");
+
+    });
+
+    jpThButton.addEventListener("click", function() {
+
+      const url = cards[0]?.jpThUrl;
+
+      if (!url) {
+        alert("日本語 → タイ語のURLが設定されていません。");
+        return;
+      }
+
+      window.location.href = url;
+
+    });
+
+    thJpButton.addEventListener("click", function() {
+
+      const url = cards[0]?.thJpUrl;
+
+      if (!url) {
+        alert("タイ語 → 日本語のURLが設定されていません。");
+        return;
+      }
+
+      window.location.href = url;
+
+    });
   }
 
   const searchBox = document.getElementById("searchBox");
@@ -553,8 +703,48 @@ async function initApp() {
 }
 
 initApp();
+
 </script>
 
+<!-- ==============================
+     学習方向モーダル
+============================== -->
+
+<div id="studyModeModal">
+
+  <div id="studyModeModalBox">
+
+    <h2 id="studyModeTitle">
+      第1課を学習
+    </h2>
+
+    <button
+      type="button"
+      class="study-mode-button"
+      id="studyModeJpTh"
+    >
+      日本語 → タイ語
+    </button>
+
+    <button
+      type="button"
+      class="study-mode-button"
+      id="studyModeThJp"
+    >
+      タイ語 → 日本語
+    </button>
+
+    <button
+      type="button"
+      class="study-mode-button"
+      id="studyModeCancel"
+    >
+      キャンセル
+    </button>
+
+  </div>
+
 </div>
+
 </body>
 </html>
