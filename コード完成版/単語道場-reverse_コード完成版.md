@@ -962,6 +962,7 @@ async function initApp() {
 
 initApp();
 </script>
+
 <!-- ==============================
 【設定モーダル】
 ============================== -->
@@ -970,8 +971,6 @@ initApp();
   <div style="background:#fff; width:90%; max-width:400px; margin:80px auto; padding:20px; border-radius:10px; max-height:80vh; overflow:auto;">
 
     <h3>設定</h3>
-
-
 
     <!-- 音声 -->
     <div class="setting-row">
@@ -987,17 +986,51 @@ initApp();
       <label><input type="radio" name="memo" value="off"> OFF</label>
     </div>
 
-    <!-- ★ここに追加 -->
+    <!-- 順番 -->
     <div class="setting-row">
       <span class="label">順番：</span>
       <label><input type="radio" name="order" value="normal"> 通常</label>
       <label><input type="radio" name="order" value="random"> ランダム</label>
     </div>
 
+    <!-- Study DB -->
+    <div class="setting-row">
+      <span class="label">戻る：</span>
+      <button type="button" id="studyDbReturnBtn">戻る</button>
+    </div>
+
     <br>
 
     <button onclick="saveSettings()">保存</button>
     <button onclick="closeSettings()">閉じる</button>
+
+  </div>
+</div>
+
+    <button onclick="saveSettings()">保存</button>
+    <button onclick="closeSettings()">閉じる</button>
+
+  </div>
+</div>
+
+<script>
+document.getElementById("studyDbReturnBtn").addEventListener("click", (e) => {
+
+  e.stopPropagation();
+
+  if (!cards.length) return;
+
+  const studyDbUrl = cards[0].studyDbUrl;
+
+  if (!studyDbUrl) {
+    alert("Study DBのURLが見つかりません。");
+    return;
+  }
+
+  window.location.href = studyDbUrl;
+
+});
+</script>
 
   </div>
 </div>
