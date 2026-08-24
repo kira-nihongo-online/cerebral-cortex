@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-単語道場_2026.8.23
+単語道場_2026.8.24
 
 ## 情報の種類
 
@@ -22,6 +22,7 @@ GitHub／GAS
 
 - 単語道場（日本語 → タイ語）
 - 単語道場-Reverse（タイ語 → 日本語）
+- Study DB
 
 ## 共通データ構成
 
@@ -29,7 +30,11 @@ GitHub／GAS
 
 両アプリは別々の独立したアプリケーションとして動作する。
 
-データは共通であり、通常版・Reverse版それぞれで同じ単語データを使用する。
+Study DBも独立したアプリケーションとして動作し、単語道場・単語道場-Reverseの機能を内部に組み込まない。
+
+Study DBはURL台帳を利用して、学習方向に応じて単語道場または単語道場-ReverseへURLジャンプする。
+
+## Google Apps Script
 
 【Google Apps Script】
 
@@ -207,38 +212,82 @@ function doGet(e) {
   }
 
   // ==========================
-  // カードデータ返却
-  // ==========================
-  const sheet = SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheetByName("単語リスト");
+// カードデータ＋URL台帳返却
+// ==========================
 
-  const data = sheet.getDataRange().getValues();
+const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  const result = [];
+const sheet = ss.getSheetByName("単語リスト");
+const urlSheet = ss.getSheetByName("URL台帳");
 
-  for (let i = 1; i < data.length; i++) {
+const data = sheet.getDataRange().getValues();
+const urlData = urlSheet.getDataRange().getValues();
 
-    const row = data[i];
+// ==========================
+// URL台帳を課Noで検索できる形にする
+// A列：課No
+// B列：JP→TH URL
+// C列：TH→JP URL
+// D列：Study DB URL
+// ==========================
 
-    result.push({
+const urlMap = {};
 
-      title: row[0],
-      lessonNo: row[1],
-      lesson: row[2],
+for (let i = 1; i < urlData.length; i++) {
 
-      hira: row[4],
-      kanji: row[5],
-      hiraImg: row[8],
-      meaningImg: row[9],
+  const row = urlData[i];
 
-      thai: row[6],
-      eng: row[7],
-      memo: row[10]
+  const lessonNo = String(row[0]).trim();
 
-    });
+  if (!lessonNo) continue;
 
-  }
+  urlMap[lessonNo] = {
+
+    jpThUrl: row[1] || "",
+    thJpUrl: row[2] || "",
+    studyDbUrl: row[3] || ""
+
+  };
+
+}
+
+// ==========================
+// カードデータ
+// ==========================
+
+const result = [];
+
+for (let i = 1; i < data.length; i++) {
+
+  const row = data[i];
+
+  const lessonNo = String(row[1]).trim();
+
+  const urls = urlMap[lessonNo] || {};
+
+  result.push({
+
+    title: row[0],
+    lessonNo: row[1],
+    lesson: row[2],
+
+    hira: row[4],
+    kanji: row[5],
+    hiraImg: row[8],
+    meaningImg: row[9],
+
+    thai: row[6],
+    eng: row[7],
+    memo: row[10],
+
+    // URL台帳
+    jpThUrl: urls.jpThUrl || "",
+    thJpUrl: urls.thJpUrl || "",
+    studyDbUrl: urls.studyDbUrl || ""
+
+  });
+
+}
 
   return ContentService
     .createTextOutput(JSON.stringify(result))
@@ -282,41 +331,94 @@ function getAllCards() {
 }
 
 
-## 主な処理
 
+主な処理
 ・意味画像ID自動入力
+
 「単語リスト」シートのNoとGoogle Drive内の画像ファイル名を照合し、意味画像のファイルIDを自動入力する。
 
 ・日本語画像ID自動入力
+
 「課No」と「No」を使用して、01_001.png形式のファイル名と照合し、日本語画像のファイルIDを自動入力する。
 
 ・課別シート作成
+
 「単語リスト」から指定した課名のデータだけを抽出し、課ごとのシートを自動作成する。
 
 ・doGet
+
 Webアプリからのリクエストを受け付ける。
-imageパラメータがある場合はGoogle Drive画像の表示URLを返す。
-通常のアクセスでは「単語リスト」から単語カードデータをJSON形式で返す。
+
+image パラメータがある場合は、Google Drive画像の表示URLを返す。
+
+通常のアクセスでは、
+
+「単語リスト」の単語カードデータ
+「URL台帳」の学習URL
+
+を取得し、課Noに対応するURLを単語カードデータに付加してJSON形式で返す。
+
+・URL台帳連携
+
+「URL台帳」のA列の課Noを基準としてURLを対応させる。
+
+B列：日本語 → タイ語
+C列：タイ語 → 日本語
+D列：Study DB
+
+単語リストの課NoとURL台帳の課Noを照合し、各カードに以下のURLを付加する。
+
+jpThUrl
+thJpUrl
+studyDbUrl
+
+これにより、Study DBは現在の課Noに対応する学習URLを取得できる。
 
 ・getImage
+
 Google DriveのファイルIDから画像を取得し、Base64形式に変換する。
 
 ・getAllCards
+
 「単語リスト」から単語カードデータを取得して配列として返す。
 
-## スプレッドシート連携
-
-対象シート：
+スプレッドシート連携
+対象シート
 
 「単語リスト」
 
-「単語道場」と「単語道場-Reverse」の両方が同じスプレッドシートを使用する。
+「URL台帳」
+
+単語リスト
+
+「単語道場」と「単語道場-Reverse」の両方が同じスプレッドシートの「単語リスト」を使用する。
 
 Webアプリへ返す主なデータ：
 
-教材、課No、課、ひらがな、漢字、タイ語、英語、日本語画像ID、意味画像ID、メモ。
+教材
+課No
+課
+ひらがな
+漢字
+タイ語
+英語
+日本語画像ID
+意味画像ID
+メモ
+URL台帳
 
-## Google Drive連携
+URL台帳は以下の構成で管理する。
+
+A列：課No
+B列：単語道場（日本語 → タイ語）
+C列：単語道場-Reverse（タイ語 → 日本語）
+D列：Study DB
+E列：教材
+F列：課名
+
+課Noをキーとして、単語データとURLを対応させる。
+
+Google Drive連携
 
 意味画像と日本語画像をGoogle Driveで管理し、ファイル名から対象カードを特定してファイルIDを取得する。
 
@@ -326,24 +428,60 @@ Webアプリへ返す主なデータ：
 
 画像IDを含む単語データは共通の「単語リスト」から取得する。
 
-## 運用方針
+アプリケーション構成
+
+以下はすべて独立したアプリケーションとして維持する。
+
+単語道場
+
+学習方向：
+
+日本語 → タイ語
+
+単語道場-Reverse
+
+学習方向：
+
+タイ語 → 日本語
+
+Study DB
+
+Study DBから各課の学習方向を選択し、URL台帳の対応URLへジャンプする。
+
+Study DBに単語道場の学習機能を組み込まない。
+
+Study DBはURLによって単語道場または単語道場-Reverseを呼び出す。
+
+URL連携
+
+URL台帳では、
+
+B列：単語道場（日本語 → タイ語）
+C列：単語道場-Reverse（タイ語 → 日本語）
+D列：Study DB
+
+として管理する。
+
+Study DBで lesson パラメータにより課Noを判定し、URL台帳の同じ課Noの行からURLを取得する。
+
+日本語 → タイ語
+
+Study DBの「日本語 → タイ語」を選択すると、URL台帳B列の該当課URLへジャンプする。
+
+タイ語 → 日本語
+
+Study DBの「タイ語 → 日本語」を選択すると、URL台帳C列の該当課URLへジャンプする。
+
+Reverse URL形式
+https://kira-nihongo-online.github.io/tango-dojo-reverse/?mode=thjp&lesson=課No
+運用方針
 
 単語データの追加・編集は「単語道場」側の共通データを基準として行う。
 
 「単語道場-Reverse」は同じ単語データを使用し、アプリケーション側で表示方向・音声方向を反転して使用する。
 
+Study DBは共通の単語データとURL台帳を利用するが、単語道場・Reverseとは独立したアプリケーションとして維持する。
+
+URL台帳を変更することで、各課からジャンプする先のURLを管理できる。
+
 両アプリは独立しているため、一方のアプリケーションコードを変更しても、もう一方のアプリケーションには直接影響しない。
-
-## URL連携
-
-URL台帳では、
-
-- B列：単語道場（日本語 → タイ語）
-- C列：単語道場-Reverse（タイ語 → 日本語）
-- D列：Study DB
-
-として管理する。
-
-単語道場-ReverseのURL形式：
-
-https://kira-nihongo-online.github.io/tango-dojo-reverse/?mode=thjp&lesson=課No
