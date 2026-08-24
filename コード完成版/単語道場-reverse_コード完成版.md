@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-単語道場-reverse_2026.8.23
+単語道場-reverse_2026.8.24
 
 ## 情報の種類
 
@@ -269,9 +269,7 @@ body{
       <img id="meaningFront">
     </div>
     <div class="bottom">
-      <div id="thai"></div>
-      <div id="eng"></div>
-      <div id="memo"></div>
+      <img id="jpImg" style="display:none;">
     </div>
   </div>
 
@@ -280,7 +278,9 @@ body{
       <img id="meaningBack">
     </div>
     <div class="bottom">
-      <img id="jpImg" style="display:none;">
+      <div id="thai"></div>
+      <div id="eng"></div>
+      <div id="memo"></div>
     </div>
   </div>
 
@@ -360,7 +360,11 @@ async function showCard(){
   if(isFront){
 
     const meaningFront = document.getElementById("meaningFront");
+    const img = document.getElementById("jpImg");
+
     meaningFront.src = "";
+    img.src = "";
+    img.style.display = "none";
 
     const currentIndex = index;
 
@@ -371,11 +375,14 @@ async function showCard(){
       ? imageCache[c.meaningImg]
       : "";
 
+    // cache済み
     if(meaningUrl){
 
       meaningFront.src = meaningUrl;
 
-    }else if(isValidId(c.meaningImg)){
+    }
+    // cache無し
+    else if(isValidId(c.meaningImg)){
 
       const src = await getImageCached(c.meaningImg);
 
@@ -386,30 +393,28 @@ async function showCard(){
     }
 
     // -------------------------
-    // タイ語
+    // 日本語画像
     // -------------------------
-    document.getElementById("thai").textContent =
-      c.thai || "";
+    const jpUrl = isValidId(c.hiraImg)
+      ? imageCache[c.hiraImg]
+      : "";
 
-    // -------------------------
-    // 英語
-    // -------------------------
-    document.getElementById("eng").textContent =
-      c.eng || "";
+    // cache済み
+    if(jpUrl){
 
-    // -------------------------
-    // メモ
-    // -------------------------
-    const settings = getSettings();
+      img.src = jpUrl;
+      img.style.display = "block";
 
-    if(settings.memo === "on"){
+    }
+    // cache無し
+    else if(isValidId(c.hiraImg)){
 
-      document.getElementById("memo").style.display = "block";
-      document.getElementById("memo").textContent = c.memo || "";
+      const src = await getImageCached(c.hiraImg);
 
-    }else{
+      if(currentIndex !== index) return;
 
-      document.getElementById("memo").style.display = "none";
+      img.src = src;
+      img.style.display = "block";
 
     }
 
@@ -425,16 +430,8 @@ async function showCard(){
     const meaningBack = document.getElementById("meaningBack");
     meaningBack.src = "";
 
-    const img = document.getElementById("jpImg");
-
-    img.src = "";
-    img.style.display = "none";
-
     const currentIndex = index;
 
-    // -------------------------
-    // meaning画像
-    // -------------------------
     const meaningUrl = isValidId(c.meaningImg)
       ? imageCache[c.meaningImg]
       : "";
@@ -445,46 +442,41 @@ async function showCard(){
 
     }else if(isValidId(c.meaningImg)){
 
-      const src = await getImageCached(c.meaningImg);
+      getImageCached(c.meaningImg).then(src => {
 
-      if(currentIndex !== index) return;
+        if(currentIndex !== index) return;
 
-      meaningBack.src = src;
+        meaningBack.src = src;
+
+      });
 
     }
 
-    // -------------------------
-    // 日本語画像
-    // -------------------------
-    const jpUrl = isValidId(c.hiraImg)
-      ? imageCache[c.hiraImg]
-      : "";
+    const settings = getSettings();
 
-    if(jpUrl){
+    document.getElementById("thai").textContent = c.thai || "";
+    document.getElementById("eng").textContent  = c.eng || "";
 
-      img.src = jpUrl;
-      img.style.display = "block";
+    if(settings.memo === "on"){
 
-    }else if(isValidId(c.hiraImg)){
+      document.getElementById("memo").style.display = "block";
+      document.getElementById("memo").textContent = c.memo || "";
 
-      const src = await getImageCached(c.hiraImg);
+    }else{
 
-      if(currentIndex !== index) return;
-
-      img.src = src;
-      img.style.display = "block";
+      document.getElementById("memo").style.display = "none";
 
     }
 
     back.style.display = "flex";
-
   }
+
   // =========================
   // UI
   // =========================
   document.getElementById("progress").textContent =
     (index + 1) + "/" + cards.length +
-    (isFront ? "（タイ語）" : "（日本語）");
+    (isFront ? "（日本語）" : "（タイ語）");
 
   updateTitle();
 
@@ -504,11 +496,11 @@ async function showCard(){
 
     if(isFront){
 
-      Voice.speakTH(cards[index].thai || "");
+      Voice.speakJP(cards[index].hira || "");
 
     }else{
 
-      Voice.speakJP(cards[index].hira || "");
+      Voice.speakTH(cards[index].thai || "");
 
     }
 
@@ -987,11 +979,17 @@ initApp();
       <label><input type="radio" name="memo" value="off"> OFF</label>
     </div>
 
-    <!-- ★ここに追加 -->
+    <!-- 順番 -->
     <div class="setting-row">
       <span class="label">順番：</span>
       <label><input type="radio" name="order" value="normal"> 通常</label>
       <label><input type="radio" name="order" value="random"> ランダム</label>
+    </div>
+
+    <!-- Study DB -->
+    <div class="setting-row">
+      <span class="label">戻る：</span>
+      <button type="button" id="studyDbReturnBtn">戻る</button>
     </div>
 
     <br>
@@ -1001,5 +999,25 @@ initApp();
 
   </div>
 </div>
+
+<script>
+document.getElementById("studyDbReturnBtn").addEventListener("click", (e) => {
+
+  e.stopPropagation();
+
+  if (!cards.length) return;
+
+  const studyDbUrl = cards[0].studyDbUrl;
+
+  if (!studyDbUrl) {
+    alert("Study DBのURLが見つかりません。");
+    return;
+  }
+
+  window.location.href = studyDbUrl;
+
+});
+</script>
+
 </body>
 </html>
