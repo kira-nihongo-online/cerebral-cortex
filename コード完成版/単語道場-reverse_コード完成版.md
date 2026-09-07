@@ -2,7 +2,7 @@
 
 ## プロジェクト
 
-単語道場-reverse_2026.8.23
+単語道場-reverse_2026.9.07
 
 ## 情報の種類
 
@@ -1006,13 +1006,7 @@ initApp();
 
   </div>
 </div>
-
-    <button onclick="saveSettings()">保存</button>
-    <button onclick="closeSettings()">閉じる</button>
-
-  </div>
-</div>
-
+    
 <script>
 document.getElementById("studyDbReturnBtn").addEventListener("click", (e) => {
 
